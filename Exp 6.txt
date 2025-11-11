@@ -1,0 +1,158 @@
+#Experiment no 6- Linked List: Create a Student Record Management System using linked list
+#• Use a singly/doubly linked list to store student data (Roll No, Name, Marks).
+#• Perform operations: Add, Delete, Update, Search, and Sort.
+#• Display records in ascending/descending order based on marks or roll number.
+
+
+class Node:
+    def __init__(self, roll_no, name, marks):
+        self.roll_no = roll_no
+        self.name = name
+        self.marks = marks
+        self.prev = None
+        self.next = None
+
+class StudentRecordManagement:
+    def __init__(self):
+        self.head = None
+
+    # Add student at end
+    def add_student(self, roll_no, name, marks):
+        new_node = Node(roll_no, name, marks)
+        if self.head is None:
+            self.head = new_node
+        else:
+            temp = self.head
+            while temp.next:
+                temp = temp.next
+            temp.next = new_node
+            new_node.prev = temp
+        print(f"\n✅ Student {name} added successfully!")
+
+    # Display records
+    def display(self):
+        if self.head is None:
+            print("\n⚠️ No records found.")
+            return
+        temp = self.head
+        print("\n📋 Student Records:")
+        print("{:<10} {:<20} {:<10}".format("Roll No", "Name", "Marks"))
+        while temp:
+            print("{:<10} {:<20} {:<10}".format(temp.roll_no, temp.name, temp.marks))
+            temp = temp.next
+
+    # Delete by roll no
+    def delete(self, roll_no):
+        temp = self.head
+        while temp:
+            if temp.roll_no == roll_no:
+                if temp.prev:
+                    temp.prev.next = temp.next
+                else:
+                    self.head = temp.next
+                if temp.next:
+                    temp.next.prev = temp.prev
+                print(f"\n🗑️ Record with Roll No {roll_no} deleted.")
+                return
+            temp = temp.next
+        print("\n⚠️ Record not found.")
+
+    # Update student details
+    def update(self, roll_no, new_name=None, new_marks=None):
+        temp = self.head
+        while temp:
+            if temp.roll_no == roll_no:
+                if new_name:
+                    temp.name = new_name
+                if new_marks is not None:
+                    temp.marks = new_marks
+                print(f"\n✏️ Record with Roll No {roll_no} updated.")
+                return
+            temp = temp.next
+        print("\n⚠️ Record not found.")
+
+    # Search student
+    def search(self, roll_no):
+        temp = self.head
+        while temp:
+            if temp.roll_no == roll_no:
+                print(f"\n🔎 Found: Roll No: {temp.roll_no}, Name: {temp.name}, Marks: {temp.marks}")
+                return
+            temp = temp.next
+        print("\n⚠️ Record not found.")
+
+    # Sort records
+    def sort_records(self, key="roll_no", ascending=True):
+        if self.head is None:
+            print("\n⚠️ No records to sort.")
+            return
+        swapped = True
+        while swapped:
+            swapped = False
+            temp = self.head
+            while temp.next:
+                if key == "roll_no":
+                    cond = (temp.roll_no > temp.next.roll_no)
+                else:  # key == "marks"
+                    cond = (temp.marks > temp.next.marks)
+
+                if (ascending and cond) or (not ascending and not cond):
+                    # Swap values
+                    temp.roll_no, temp.next.roll_no = temp.next.roll_no, temp.roll_no
+                    temp.name, temp.next.name = temp.next.name, temp.name
+                    temp.marks, temp.next.marks = temp.next.marks, temp.marks
+                    swapped = True
+                temp = temp.next
+        print(f"\n✅ Records sorted by {key} in {'ascending' if ascending else 'descending'} order.")
+
+# ---------------------- MAIN MENU ----------------------
+if __name__ == "__main__":
+    system = StudentRecordManagement()
+
+    while True:
+        print("\n===== 🎓 Student Record Management System =====")
+        print("1. Add Student")
+        print("2. Display All Students")
+        print("3. Delete Student")
+        print("4. Update Student")
+        print("5. Search Student")
+        print("6. Sort Records")
+        print("7. Exit")
+
+        choice = input("Enter your choice (1-7): ")
+
+        if choice == "1":
+            roll = int(input("Enter Roll No: "))
+            name = input("Enter Name: ")
+            marks = int(input("Enter Marks: "))
+            system.add_student(roll, name, marks)
+
+        elif choice == "2":
+            system.display()
+
+        elif choice == "3":
+            roll = int(input("Enter Roll No to delete: "))
+            system.delete(roll)
+
+        elif choice == "4":
+            roll = int(input("Enter Roll No to update: "))
+            new_name = input("Enter new name (leave blank to keep unchanged): ")
+            new_marks = input("Enter new marks (leave blank to keep unchanged): ")
+            system.update(roll, new_name if new_name else None, int(new_marks) if new_marks else None)
+
+        elif choice == "5":
+            roll = int(input("Enter Roll No to search: "))
+            system.search(roll)
+
+        elif choice == "6":
+            key = input("Sort by 'roll_no' or 'marks': ").strip()
+            order = input("Order 'asc' or 'desc': ").strip()
+            ascending = True if order == "asc" else False
+            system.sort_records(key=key, ascending=ascending)
+
+        elif choice == "7":
+            print("\n👋 Exiting Student Record Management System. Goodbye!")
+            break
+
+        else:
+            print("\n⚠️ Invalid choice! Please try again.")
